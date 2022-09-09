@@ -10,10 +10,14 @@
       "body" : [
         {
           "kind": "Terminal",
-          "name": "b",
+          "name": "d_r",
           "regex": {
-            "kind": "Char",
-            "val": 98
+            "kind": "Seq",
+            "symbols": [
+              {"kind": "Char", "val": 100},
+              {"kind": "Char", "val": 95},
+              {"kind": "Char", "val": 114}
+            ]
           }
         },
         {
@@ -22,10 +26,12 @@
         },
         {
           "kind": "Terminal",
-          "name": "a",
+          "name": "d",
           "regex": {
-            "kind": "Char",
-            "val": 97
+            "kind": "Seq",
+            "symbols": [
+              {"kind": "Char", "val": 100}
+            ]
           }
         }
       ]
@@ -73,10 +79,14 @@
         },
         {
           "kind": "Terminal",
-          "name": "d",
+          "name": "a_r",
           "regex": {
-            "kind": "Char",
-            "val": 100
+            "kind": "Seq",
+            "symbols": [
+              {"kind": "Char", "val": 97},
+              {"kind": "Char", "val": 95},
+              {"kind": "Char", "val": 114}
+            ]
           }
         },
         {
@@ -125,10 +135,12 @@
       "body" : [
         {
           "kind": "Terminal",
-          "name": "c",
+          "name": "a",
           "regex": {
-            "kind": "Char",
-            "val": 99
+            "kind": "Seq",
+            "symbols": [
+              {"kind": "Char", "val": 97}
+            ]
           }
         },
         {

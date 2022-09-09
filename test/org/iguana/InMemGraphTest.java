@@ -12,52 +12,75 @@ import org.iguana.parser.Pair;
 import org.iguana.parser.ParseOptions;
 import org.iguana.parsetree.ParseTreeNode;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.FileNotFoundException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class InMemGraphTest {
 
+    private static final String TERM_SUBCLASS = "subClassOf";
+    private static final String TERM_SUBCLASS_R = "subClassOf_r";
+    private static final Map<String, String> GRAMMARS = new HashMap<>();
+
+    static {
+        GRAMMARS.put("g1", "test/resources/grammars/graph/g1/grammar.json");
+        GRAMMARS.put("g2", "test/resources/grammars/graph/g2/grammar.json");
+        GRAMMARS.put("Test4", "test/resources/grammars/graph/Test4/grammar.json");
+        GRAMMARS.put("Test5", "test/resources/grammars/graph/Test5/grammar.json");
+    }
+
     @Test
     public void testGraphInput() {
         List<List<Edge>> edges = Arrays.asList(
-                Arrays.asList(
-                        new Edge("a", 1),
-                        new Edge("b", 3)
+                List.of(
+                        new Edge(TERM_SUBCLASS, 1),
+                        new Edge(TERM_SUBCLASS_R, 3)
                 ),
                 Collections.singletonList(
-                        new Edge("a", 2)
+                        new Edge(TERM_SUBCLASS, 2)
                 ),
                 Collections.singletonList(
-                        new Edge("a", 0)
+                        new Edge(TERM_SUBCLASS, 0)
                 ),
                 Collections.singletonList(
-                        new Edge("b", 0)
+                        new Edge(TERM_SUBCLASS_R, 0)
                 )
         );
         GraphInput input = new InMemGraphInput(
                 edges,
                 Stream.of(0, 1, 2, 3),
-                Arrays.asList(0, 1, 2, 3)
+                List.of(0, 1, 2, 3)
         );
 
         Grammar grammar;
         try {
-            grammar = Grammar.load("test/resources/grammars/graph/g1/grammar.json", "json");
+            grammar = Grammar.load(GRAMMARS.get("g1"), "json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException("No grammar.json file is present");
         }
         IguanaParser parser = new IguanaParser(grammar);
-
         Map<Pair, ParseTreeNode> node = parser.getParserTree(input, new ParseOptions.Builder().setAmbiguous(true).build());
-        System.out.println(node.size());
-        node.keySet().forEach(x -> System.out.println(x.startVertex + " " + x.endVertex));
 
+        Set<Pair> expectedReachableVertices = Set.of(
+                new Pair(3, 2),
+                new Pair(0, 0),
+                new Pair(0, 1),
+                new Pair(0, 2),
+                new Pair(3, 0),
+                new Pair(3, 1)
+        );
+        Set<Pair> actualReachableVertices = node.keySet();
+        assertTrue(expectedReachableVertices.size() == actualReachableVertices.size()
+                && expectedReachableVertices.containsAll(actualReachableVertices)
+                && actualReachableVertices.containsAll(expectedReachableVertices));
     }
+
+
     @Test
     public void testGraphReachability1() {
         List<List<Edge>> edges = Arrays.asList(
@@ -77,24 +100,33 @@ public class InMemGraphTest {
         GraphInput input = new InMemGraphInput(
                 edges,
                 Stream.of(0, 1, 2, 3),
-                Arrays.asList(0, 1, 2, 3)
+                List.of(0, 1, 2, 3)
         );
 
         Grammar grammar;
         try {
-            grammar = Grammar.load("test/resources/grammars/graph/Test4/grammar.json", "json");
+            grammar = Grammar.load(GRAMMARS.get("Test4"), "json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException("No grammar.json file is present");
         }
         IguanaParser parser = new IguanaParser(grammar);
-//        GrammarGraph grammarGraph = GrammarGraphBuilder.from(grammar);
-
         Map<Pair, ParseTreeNode> parseResults = parser.getParserTree(input,
                 new ParseOptions.Builder().setAmbiguous(true).build());
-        assert (parseResults != null);
-        System.out.println(parseResults.size());
-        parseResults.keySet().forEach(System.out::println);
-        parseResults.keySet().forEach(x -> System.out.println(x.startVertex + " " + x.endVertex));
+
+        assertNotNull(parseResults);
+        Set<Pair> expectedReachableVertices = Set.of(
+                new Pair(3, 3),
+                new Pair(0, 1),
+                new Pair(1, 2),
+                new Pair(2, 3),
+                new Pair(0, 2),
+                new Pair(1, 3),
+                new Pair(0, 3)
+        );
+        Set<Pair> actualReachableVertices = parseResults.keySet();
+        assertTrue(expectedReachableVertices.size() == actualReachableVertices.size()
+                && expectedReachableVertices.containsAll(actualReachableVertices)
+                && actualReachableVertices.containsAll(expectedReachableVertices));
     }
 
     @Test
@@ -115,27 +147,31 @@ public class InMemGraphTest {
 
         Grammar grammar;
         try {
-            grammar = Grammar.load("test/resources/grammars/graph/Test4/grammar.json", "json");
+            grammar = Grammar.load(GRAMMARS.get("Test4"), "json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException("No grammar.json file is present");
         }
         IguanaParser parser = new IguanaParser(grammar);
-//        GrammarGraph grammarGraph = GrammarGraphBuilder.from(grammar);
-
         Map<Pair, ParseTreeNode> parseResults = parser.getParserTree(input,
                 new ParseOptions.Builder().setAmbiguous(true).build());
-        assert (parseResults != null);
-        System.out.println(parseResults.size());
-        parseResults.keySet().forEach(System.out::println);
-        parseResults.keySet().forEach(x -> System.out.println(x.startVertex + " " + x.endVertex));
+
+        assertNotNull (parseResults);
+        Set<Pair> expectedReachableVertices = Set.of(
+                new Pair(1, 1),
+                new Pair(0, 1)
+        );
+        Set<Pair> actualReachableVertices = parseResults.keySet();
+        assertTrue(expectedReachableVertices.size() == actualReachableVertices.size()
+                && expectedReachableVertices.containsAll(actualReachableVertices)
+                && actualReachableVertices.containsAll(expectedReachableVertices));
     }
 
     @Test
     public void testGraphReachability6() {
         List<List<Edge>> edges = List.of(
                 Arrays.asList(
-                        new Edge("a", 0),
-                        new Edge("b", 0)
+                        new Edge(TERM_SUBCLASS, 0),
+                        new Edge(TERM_SUBCLASS_R, 0)
                 )
         );
         GraphInput input = new InMemGraphInput(
@@ -146,33 +182,36 @@ public class InMemGraphTest {
 
         Grammar grammar;
         try {
-            grammar = Grammar.load("test/resources/grammars/graph/g1/grammar.json", "json");
+            grammar = Grammar.load(GRAMMARS.get("g1"), "json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException("No grammar.json file is present");
         }
         IguanaParser parser = new IguanaParser(grammar);
-//        GrammarGraph grammarGraph = GrammarGraphBuilder.from(grammar);
-
         Map<Pair, ParseTreeNode> parseResults = parser.getParserTree(input,
                 new ParseOptions.Builder().setAmbiguous(true).build());
-        assert (parseResults != null);
-        System.out.println(parseResults.size());
-        parseResults.keySet().forEach(System.out::println);
-        parseResults.keySet().forEach(x -> System.out.println(x.startVertex + " " + x.endVertex));
+        
+        assertNotNull (parseResults);
+        Set<Pair> expectedReachableVertices = Set.of(
+                new Pair(0, 0)
+        );
+        Set<Pair> actualReachableVertices = parseResults.keySet();
+        assertTrue(expectedReachableVertices.size() == actualReachableVertices.size()
+                && expectedReachableVertices.containsAll(actualReachableVertices)
+                && actualReachableVertices.containsAll(expectedReachableVertices));
     }
 
     @Test
     public void testGraphReachability10() {
         List<List<Edge>> edges = List.of(
-                Arrays.asList(
-                        new Edge("a", 2)
+                List.of(
+                        new Edge(TERM_SUBCLASS, 2)
                 ),
-                Arrays.asList(
-                        new Edge("b", 1),
-                        new Edge("a", 0)
+                List.of(
+                        new Edge(TERM_SUBCLASS_R, 1),
+                        new Edge(TERM_SUBCLASS, 0)
                 ),
-                Arrays.asList(
-                        new Edge("a", 1)
+                List.of(
+                        new Edge(TERM_SUBCLASS, 1)
                 )
         );
         GraphInput input = new InMemGraphInput(
@@ -183,55 +222,60 @@ public class InMemGraphTest {
 
         Grammar grammar;
         try {
-            grammar = Grammar.load("test/resources/grammars/graph/g1/grammar.json", "json");
+            grammar = Grammar.load(GRAMMARS.get("g1"), "json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException("No grammar.json file is present");
         }
         IguanaParser parser = new IguanaParser(grammar);
-//        GrammarGraph grammarGraph = GrammarGraphBuilder.from(grammar);
-
         Map<Pair, ParseTreeNode> parseResults = parser.getParserTree(input,
                 new ParseOptions.Builder().setAmbiguous(true).build());
-        assert (parseResults != null);
-        System.out.println(parseResults.size());
-        parseResults.keySet().forEach(System.out::println);
-        parseResults.keySet().forEach(x -> System.out.println(x.startVertex + " " + x.endVertex));
+
+        assertNotNull (parseResults);
+        Set<Pair> expectedReachableVertices = Set.of(
+                new Pair(1, 0),
+                new Pair(1, 1),
+                new Pair(1, 2)
+        );
+        Set<Pair> actualReachableVertices = parseResults.keySet();
+        assertTrue(expectedReachableVertices.size() == actualReachableVertices.size()
+                && expectedReachableVertices.containsAll(actualReachableVertices)
+                && actualReachableVertices.containsAll(expectedReachableVertices));
     }
 
     @Test
     public void testGraphReachability9() {
         List<List<Edge>> edges = List.of(
-                Arrays.asList(
+                List.of(
                         new Edge("a", 1)
                 ),
-                Arrays.asList(
+                List.of(
                         new Edge("a", 2),
                         new Edge("a", 5),
                         new Edge("b", 8)
                 ),
-                Arrays.asList(
+                List.of(
                         new Edge("b", 3)
                 ),
-                Arrays.asList(
+                List.of(
                         new Edge("b", 4)
                 ),
-                Arrays.asList(),
-                Arrays.asList(
+                List.of(),
+                List.of(
                         new Edge("b", 6)
                 ),
-                Arrays.asList(
+                List.of(
                         new Edge("a", 7)
                 ),
-                Arrays.asList(
+                List.of(
                         new Edge("b", 3)
                 ),
-                Arrays.asList(
+                List.of(
                         new Edge("a", 9)
                 ),
-                Arrays.asList(
+                List.of(
                         new Edge("b", 10)
                 ),
-                Arrays.asList(
+                List.of(
                         new Edge("a", 3)
                 )
         );
@@ -243,36 +287,47 @@ public class InMemGraphTest {
 
         Grammar grammar;
         try {
-            grammar = Grammar.load("test/resources/grammars/graph/Test5/grammar.json", "json");
+            grammar = Grammar.load(GRAMMARS.get("Test5"), "json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException("No grammar.json file is present");
         }
         IguanaParser parser = new IguanaParser(grammar);
-//        GrammarGraph grammarGraph = GrammarGraphBuilder.from(grammar);
-
         Map<Pair, ParseTreeNode> parseResults = parser.getParserTree(input,
                 new ParseOptions.Builder().setAmbiguous(true).build());
-        assert (parseResults != null);
-        System.out.println(parseResults.size());
-        parseResults.keySet().forEach(System.out::println);
-        parseResults.keySet().forEach(x -> System.out.println(x.startVertex + " " + x.endVertex));
+
+        assertNotNull (parseResults);
+        Set<Pair> expectedReachableVertices = Set.of(
+                new Pair(1, 3),
+                new Pair(8, 10),
+                new Pair(0, 4),
+                new Pair(1, 6),
+                new Pair(0, 8),
+                new Pair(0, 10),
+                new Pair(10, 4),
+                new Pair(8, 4),
+                new Pair(6, 3)
+        );
+        Set<Pair> actualReachableVertices = parseResults.keySet();
+        assertTrue(expectedReachableVertices.size() == actualReachableVertices.size()
+                && expectedReachableVertices.containsAll(actualReachableVertices)
+                && actualReachableVertices.containsAll(expectedReachableVertices));
     }
 
     @Test
     public void testGraphReachability7() {
         List<List<Edge>> edges = Arrays.asList(
                 List.of(
-                        new Edge("a", 1)
+                        new Edge(TERM_SUBCLASS, 1)
                 ),
                 List.of(
-                        new Edge("a", 2)
+                        new Edge(TERM_SUBCLASS, 2)
                 ),
                 Arrays.asList(
-                        new Edge("b", 3),
-                        new Edge("b", 3)
+                        new Edge(TERM_SUBCLASS_R, 3),
+                        new Edge(TERM_SUBCLASS_R, 3)
                 ),
                 List.of(
-                        new Edge("a", 4)
+                        new Edge(TERM_SUBCLASS, 4)
                 ),
                 List.of()
         );
@@ -284,44 +339,47 @@ public class InMemGraphTest {
 
         Grammar grammar;
         try {
-            grammar = Grammar.load("test/resources/grammars/graph/g1/grammar.json", "json");
+            grammar = Grammar.load(GRAMMARS.get("g1"), "json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException("No grammar.json file is present");
         }
         IguanaParser parser = new IguanaParser(grammar);
-//        GrammarGraph grammarGraph = GrammarGraphBuilder.from(grammar);
-
         Map<Pair, ParseTreeNode> parseResults = parser.getParserTree(input,
                 new ParseOptions.Builder().setAmbiguous(true).build());
-        assert (parseResults != null);
-        System.out.println(parseResults.size());
-        parseResults.keySet().forEach(System.out::println);
-        parseResults.keySet().forEach(x -> System.out.println(x.startVertex + " " + x.endVertex));
+
+        assertNotNull (parseResults);
+        Set<Pair> expectedReachableVertices = Set.of(
+                new Pair(2, 4)
+        );
+        Set<Pair> actualReachableVertices = parseResults.keySet();
+        assertTrue(expectedReachableVertices.size() == actualReachableVertices.size()
+                && expectedReachableVertices.containsAll(actualReachableVertices)
+                && actualReachableVertices.containsAll(expectedReachableVertices));
     }
 
     @Test
     public void testGraphReachability8() {
         List<List<Edge>> edges = Arrays.asList(
                 List.of(
-                        new Edge("a", 1)
+                        new Edge(TERM_SUBCLASS, 1)
                 ),
                 List.of(
-                        new Edge("a", 2)
+                        new Edge(TERM_SUBCLASS, 2)
                 ),
                 List.of(
-                        new Edge("a", 3)
+                        new Edge(TERM_SUBCLASS, 3)
                 ),
                 List.of(
-                        new Edge("b", 4)
+                        new Edge(TERM_SUBCLASS_R, 4)
                 ),
                 List.of(
-                        new Edge("b", 5)
+                        new Edge(TERM_SUBCLASS_R, 5)
                 ),
                 List.of(
-                        new Edge("a", 6)
+                        new Edge(TERM_SUBCLASS, 6)
                 ),
                 List.of(
-                        new Edge("b", 6)
+                        new Edge(TERM_SUBCLASS_R, 6)
                 )
         );
         GraphInput input = new InMemGraphInput(
@@ -332,29 +390,33 @@ public class InMemGraphTest {
 
         Grammar grammar;
         try {
-            grammar = Grammar.load("test/resources/grammars/graph/g1/grammar.json", "json");
+            grammar = Grammar.load(GRAMMARS.get("g1"), "json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException("No grammar.json file is present");
         }
         IguanaParser parser = new IguanaParser(grammar);
-//        GrammarGraph grammarGraph = GrammarGraphBuilder.from(grammar);
-
         Map<Pair, ParseTreeNode> parseResults = parser.getParserTree(input,
                 new ParseOptions.Builder().setAmbiguous(true).build());
-        assert (parseResults != null);
-        System.out.println(parseResults.size());
-//        parseResults.keySet().forEach(System.out::println);
-        parseResults.keySet().forEach(x -> System.out.println(x.startVertex + " " + x.endVertex));
+
+        assertNotNull (parseResults);
+        Set<Pair> expectedReachableVertices = Set.of(
+                new Pair(4, 6)
+        );
+        Set<Pair> actualReachableVertices = parseResults.keySet();
+        assertTrue(expectedReachableVertices.size() == actualReachableVertices.size()
+                && expectedReachableVertices.containsAll(actualReachableVertices)
+                && actualReachableVertices.containsAll(expectedReachableVertices));
     }
 
     @Test
+    @Disabled()
     public void testGraphInput2() {
         List<List<Edge>> edges = Arrays.asList(
                 Collections.singletonList(
-                        new Edge("a", 1)
+                        new Edge(TERM_SUBCLASS, 1)
                 ),
                 Collections.singletonList(
-                        new Edge("a", 1)
+                        new Edge(TERM_SUBCLASS, 1)
                 )
         );
         Input input = new InMemGraphInput(
@@ -365,13 +427,12 @@ public class InMemGraphTest {
 
         Grammar grammar;
         try {
-            grammar = Grammar.load("test/resources/grammars/graph/g2/grammar.json", "json");
+            grammar = Grammar.load(GRAMMARS.get("g2"), "json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException("No grammar.json file is present");
         }
         IguanaParser parser = new IguanaParser(grammar);
         GrammarGraph grammarGraph = GrammarGraphBuilder.from(grammar);
-
         ParseTreeNode parseTreeNode = parser.getParserTree(input, new ParseOptions.Builder().setAmbiguous(true).build());
     }
 
@@ -393,19 +454,22 @@ public class InMemGraphTest {
 
         Grammar grammar;
         try {
-            grammar = Grammar.load("test/resources/grammars/graph/Test5/grammar.json", "json");
+            grammar = Grammar.load(GRAMMARS.get("Test5"), "json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException("No grammar.json file is present");
         }
         IguanaParser parser = new IguanaParser(grammar);
-//        GrammarGraph grammarGraph = GrammarGraphBuilder.from(grammar);
-
         Map<Pair, ParseTreeNode> parseResults = parser.getParserTree(input,
                 new ParseOptions.Builder().setAmbiguous(true).build());
-        assert (parseResults != null);
-        System.out.println(parseResults.size());
-        parseResults.keySet().forEach(System.out::println);
-        parseResults.keySet().forEach(x -> System.out.println(x.startVertex + " " + x.endVertex));
+
+        assertNotNull (parseResults);
+        Set<Pair> expectedReachableVertices = Set.of(
+                new Pair(0, 1)
+        );
+        Set<Pair> actualReachableVertices = parseResults.keySet();
+        assertTrue(expectedReachableVertices.size() == actualReachableVertices.size()
+                && expectedReachableVertices.containsAll(actualReachableVertices)
+                && actualReachableVertices.containsAll(expectedReachableVertices));
     }
 
     @Test
@@ -424,18 +488,21 @@ public class InMemGraphTest {
 
         Grammar grammar;
         try {
-            grammar = Grammar.load("test/resources/grammars/graph/Test4/grammar.json", "json");
+            grammar = Grammar.load(GRAMMARS.get("Test4"), "json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException("No grammar.json file is present");
         }
         IguanaParser parser = new IguanaParser(grammar);
-//        GrammarGraph grammarGraph = GrammarGraphBuilder.from(grammar);
-
         Map<Pair, ParseTreeNode> parseResults = parser.getParserTree(input,
                 new ParseOptions.Builder().setAmbiguous(true).build());
-        assert (parseResults != null);
-        System.out.println(parseResults.size());
-        parseResults.keySet().forEach(System.out::println);
-        parseResults.keySet().forEach(x -> System.out.println(x.startVertex + " " + x.endVertex));
+
+        assertNotNull (parseResults);
+        Set<Pair> expectedReachableVertices = Set.of(
+                new Pair(0, 1)
+        );
+        Set<Pair> actualReachableVertices = parseResults.keySet();
+        assertTrue(expectedReachableVertices.size() == actualReachableVertices.size()
+                && expectedReachableVertices.containsAll(actualReachableVertices)
+                && actualReachableVertices.containsAll(expectedReachableVertices));
     }
 }

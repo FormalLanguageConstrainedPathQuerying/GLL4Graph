@@ -29,7 +29,7 @@ public class InMemGraphInput extends GraphInput {
 
     @Override
     public boolean isFinal(int v) {
-        return finalVertices.contains(v);
+        return true;
     }
 
     @Override

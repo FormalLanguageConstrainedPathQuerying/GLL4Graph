@@ -184,7 +184,7 @@
                 <configuration>
                     <includeSystemScope>true</includeSystemScope>
                     <addResources>true</addResources>
-                    <mainClass>benchmark.Neo4jBenchmark</mainClass>
+                    <mainClass>benchmark.GraphBenchmark</mainClass>
                 </configuration>
                 <executions>
                     <execution>

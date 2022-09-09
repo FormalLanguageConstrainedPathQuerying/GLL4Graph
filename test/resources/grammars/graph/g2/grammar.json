@@ -10,10 +10,23 @@
       "body" : [
         {
           "kind": "Terminal",
-          "name": "b",
+          "name": "subClassOf_r",
           "regex": {
-            "kind": "Char",
-            "val": 98
+            "kind": "Seq",
+            "symbols": [
+              {"kind": "Char", "val": 115},
+              {"kind": "Char", "val": 117},
+              {"kind": "Char", "val": 98},
+              {"kind": "Char", "val": 67},
+              {"kind": "Char", "val": 108},
+              {"kind": "Char", "val": 97},
+              {"kind": "Char", "val": 115},
+              {"kind": "Char", "val": 115},
+              {"kind": "Char", "val": 79},
+              {"kind": "Char", "val": 102},
+              {"kind": "Char", "val": 95},
+              {"kind": "Char", "val": 114}
+            ]
           }
         },
         {
@@ -22,10 +35,21 @@
         },
         {
           "kind": "Terminal",
-          "name": "a",
+          "name": "subClassOf",
           "regex": {
-            "kind": "Char",
-            "val": 97
+            "kind": "Seq",
+            "symbols": [
+              {"kind": "Char", "val": 115},
+              {"kind": "Char", "val": 117},
+              {"kind": "Char", "val": 98},
+              {"kind": "Char", "val": 67},
+              {"kind": "Char", "val": 108},
+              {"kind": "Char", "val": 97},
+              {"kind": "Char", "val": 115},
+              {"kind": "Char", "val": 115},
+              {"kind": "Char", "val": 79},
+              {"kind": "Char", "val": 102}
+            ]
           }
         }
       ]
@@ -39,10 +63,21 @@
       "body" : [
         {
           "kind": "Terminal",
-          "name": "a",
+          "name": "subClassOf",
           "regex": {
-            "kind": "Char",
-            "val": 97
+            "kind": "Seq",
+            "symbols": [
+              {"kind": "Char", "val": 115},
+              {"kind": "Char", "val": 117},
+              {"kind": "Char", "val": 98},
+              {"kind": "Char", "val": 67},
+              {"kind": "Char", "val": 108},
+              {"kind": "Char", "val": 97},
+              {"kind": "Char", "val": 115},
+              {"kind": "Char", "val": 115},
+              {"kind": "Char", "val": 79},
+              {"kind": "Char", "val": 102}
+            ]
           }
         }
       ]

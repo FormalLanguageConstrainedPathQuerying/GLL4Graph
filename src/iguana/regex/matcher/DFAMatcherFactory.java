@@ -48,13 +48,7 @@ public class DFAMatcherFactory implements MatcherFactory {
         if (regex == Epsilon.getInstance())
             return epsilonMatcher();
 
-        if (regex instanceof Char)
-//            return characterMatcher((Char) regex);
-            return new GraphMatcher(regex.toString());
-        if (regex instanceof CharRange)
-            return characterRangeMatcher((CharRange) regex);
-
-        return cache.computeIfAbsent(regex, DFAMatcher::new);
+        return new GraphMatcher(regex.toString());
     }
 
     @Deprecated
