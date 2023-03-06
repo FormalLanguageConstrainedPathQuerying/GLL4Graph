@@ -538,13 +538,14 @@ mvn exec:java -Dexec.mainClass="benchmark.GraphBenchmark" -Dexec.args="aguments"
 mvn exec:java -Dexec.mainClass="benchmark.GraphBenchmark" -Dexec.args="-h"
 ```
 ```
-usage: GraphBenchmark [-h] -d <dataset name> -gm <path> -gp <path> -gs <storage type> -m <number> -p <problem type> -S <s=value1 a=value2> -w <number>
+usage: GraphBenchmark [-h] [-mem] -d <dataset name> -gm <path> -gp <path> -gs <storage type> -m <number> -p <problem type> -S <s=value1 a=value2> -w <number>
  -d,--dataset <dataset name>            The name of the dataset, an important component of the file name with the results
  -gm,--grammar <path>                   Path to JSON file contains context-free grammar
  -gp,--graph <path>                     Path to directory contains files nodes.csv and edges.csv
  -gs,--graph_storage <storage type>     Graph storage type, allowed values: NEO4J, IN_MEMORY
  -h,--help                              Print help message
  -m,--measurement_iterations <number>   Number of measurement iterations
+ -mem,--memory_usage                    Whether to measure memory consumption
  -p,--problem <problem type>            Benchmarking algorithm, allowed values: REACHABILITY, ALL_PATHS
  -S,--scenario <s=value1 a=value2>      Benchmarking scenario and its argument, 's' property allowed values: ALL_PAIRS, MULTIPLE_SOURCES, 'a' property
                                         contains number of nodes if 's' equals ALL_PAIRS or path to file with vertices chunks if 's' equals
@@ -559,7 +560,7 @@ Here is an example which can be run right after project is downloaded and result
 To run **all pairs reachability** algorithm on **Core** graph on **G<sub>1</sub>** grammar use the following command:
 
 ```bash
-mvn exec:java -Dexec.mainClass="benchmark.GraphBenchmark" -Dexec.args="-d Core -gm test/resources/grammars/graph/g1/grammar.json -gp data/core -gs NEO4J -p REACHABILITY -S -s ALL_PAIRS -a $(( $(cat "data/core/nodes.csv" | wc -l)-1 )) -w 1 -m 10"
+mvn exec:java -Dexec.mainClass="benchmark.GraphBenchmark" -Dexec.args="-d Core -gm test/resources/grammars/graph/g1/grammar.json -gp data/core -gs NEO4J -p REACHABILITY -S s=ALL_PAIRS -S a=$(( $(cat "data/core/nodes.csv" | wc -l)-1 )) -w 1 -m 10"
 ```
 
 ### Data
