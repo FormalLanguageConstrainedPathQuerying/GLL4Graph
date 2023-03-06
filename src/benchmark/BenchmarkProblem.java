@@ -15,4 +15,6 @@ public abstract class BenchmarkProblem {
     public abstract void runAlgo(IguanaParser parser, GraphInput input);
 
     public abstract long getResult();
+
+    public abstract void clearResult();
 }

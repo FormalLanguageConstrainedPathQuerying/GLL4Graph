@@ -26,6 +26,9 @@ public class BenchmarkProblemReachability extends BenchmarkProblem {
     }
 
     @Override
+    public void clearResult() { parseResults = null; }
+
+    @Override
     public String toString() {
         return "REACHABILITY";
     }

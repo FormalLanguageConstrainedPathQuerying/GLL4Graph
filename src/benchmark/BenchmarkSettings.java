@@ -19,8 +19,8 @@ public class BenchmarkSettings {
                 cmd.getOptionValue(CliParser.GRAPH_OPT),
                 cmd.getOptionValue(CliParser.DATASET_OPT),
                 Integer.parseInt(cmd.getOptionValue(CliParser.WARMUP_ITERATIONS_OPT)),
-                Integer.parseInt(cmd.getOptionValue(CliParser.MEASUREMENT_ITERATIONS_OPT)));
-
+                Integer.parseInt(cmd.getOptionValue(CliParser.MEASUREMENT_ITERATIONS_OPT)),
+                cmd.hasOption(CliParser.MEMORY_USAGE));
     }
 
     private final GraphStorage storageType;
@@ -31,6 +31,7 @@ public class BenchmarkSettings {
     private final String graphPath;
     private final int warmupIterations;
     private final int measurementIterations;
+    private final boolean withMemoryUsage;
 
     private BenchmarkSettings(GraphStorage storageType,
                               Problem problem,
@@ -39,7 +40,8 @@ public class BenchmarkSettings {
                               String graphPath,
                               String datasetName,
                               int warmupIterations,
-                              int measurementIterations) {
+                              int measurementIterations,
+                              boolean withMemoryUsage) {
         this.storageType = storageType;
         this.problem = problem;
         this.scenario = scenario;
@@ -48,6 +50,7 @@ public class BenchmarkSettings {
         this.graphPath = graphPath;
         this.warmupIterations = warmupIterations;
         this.measurementIterations = measurementIterations;
+        this.withMemoryUsage = withMemoryUsage;
     }
 
     public GraphStorage getStorageType() {
@@ -81,6 +84,8 @@ public class BenchmarkSettings {
     public int getMeasurementIterations() {
         return measurementIterations;
     }
+
+    public boolean isWithMemoryUsage() { return withMemoryUsage; }
 
     public static class ScenarioSettings {
 

@@ -23,6 +23,9 @@ public class BenchmarkProblemAllPaths extends BenchmarkProblem {
     }
 
     @Override
+    public void clearResult() { parseResults = null; }
+
+    @Override
     public String toString() {
         return "SPPF";
     }

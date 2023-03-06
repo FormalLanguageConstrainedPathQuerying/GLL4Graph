@@ -6,10 +6,10 @@ import java.util.List;
 
 public class BenchmarkScenarioAllPairs extends BenchmarkScenario {
 
-    private final int nodesCount;
+    private final List<List<Integer>> startVerticesChunks;
 
     public BenchmarkScenarioAllPairs(int nodesCount) {
-        this.nodesCount = nodesCount;
+        this.startVerticesChunks = List.of(Interval.zeroTo(nodesCount - 1));
     }
 
     @Override
@@ -24,7 +24,7 @@ public class BenchmarkScenarioAllPairs extends BenchmarkScenario {
 
     @Override
     public List<List<Integer>> getStartVerticesChunks() {
-        return List.of(Interval.zeroTo(nodesCount - 1));
+        return startVerticesChunks;
     }
 
     @Override
