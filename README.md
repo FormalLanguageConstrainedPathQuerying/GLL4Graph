@@ -24,7 +24,7 @@ The graph data is selected from [CFPQ_Data dataset](https://github.com/JetBrains
 * Graphs related to RDF analysis problems
 * Graphs related to static code analysis problems
 
-A detailed description of the graphs is listed bellow.
+A detailed description of the graphs is listed below.
 
 **RDF analysis** 
 
