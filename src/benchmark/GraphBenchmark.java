@@ -14,7 +14,7 @@ import java.util.List;
 public class GraphBenchmark {
     private static final String RESULTS_DIR = "results";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         final var cliParser = new CliParser();
         if (cliParser.hasHelp(args)) {
             cliParser.printHelp();
@@ -40,6 +40,7 @@ public class GraphBenchmark {
     private final String graphPath;
     private final int warmupIterations;
     private final int measurementIterations;
+    private final CsvGenerator csvGenerator;
 
     private GraphBenchmark(BenchmarkSettings settings) {
         graphStorage = BenchmarkGraphStorage.createBenchmarkStorage(settings.getStorageType());
@@ -50,24 +51,21 @@ public class GraphBenchmark {
         graphPath = settings.getGraphPath();
         warmupIterations = settings.getWarmupIterations();
         measurementIterations = settings.getMeasurementIterations();
+        csvGenerator = settings.isWithMemoryUsage()
+                ? new CsvWithMemoryGenerator(scenario, RESULTS_DIR, datasetName, problem.toString(), graphStorage.toString())
+                : new CsvGenerator(scenario, RESULTS_DIR, datasetName, problem.toString(), graphStorage.toString());
     }
 
-    void benchmark() throws IOException {
+    void benchmark() throws IOException, InterruptedException {
+        MemoryCleaner memoryCleaner = new MemoryCleaner();
         Grammar grammar = Grammar.load(grammarPath, "json");
         graphStorage.loadGraph(graphPath);
-        File outFile = new File("%s%s%s_%s_%s_%s.csv".formatted(
-                RESULTS_DIR,
-                File.separator,
-                datasetName,
-                scenario.toString(),
-                problem.toString(),
-                graphStorage.toString())
-        );
+        File outFile = new File(csvGenerator.getFilename());
         boolean fileExists = !outFile.createNewFile();
         System.out.printf("Benchmarking %s for %s graph%n", problem, datasetName);
         try (PrintWriter outStatsTime = new PrintWriter(new FileOutputStream(outFile, true), true)) {
             if (!fileExists) {
-                outStatsTime.println(scenario.getCsvHeader());
+                outStatsTime.println(csvGenerator.getHeader());
             }
 
             final int maxIters = warmupIterations + measurementIterations;
@@ -88,13 +86,20 @@ public class GraphBenchmark {
                     final double stepRunTime = (double) (stepStopTime - stepStartTime) / 1_000_000_000.;
 
                     if (iter >= warmupIterations) {
-                        outStatsTime.println(scenario.getCsvRecord(chunkIndex, stepPrepareTime, stepRunTime, problem.getResult()));
+                        outStatsTime.println(csvGenerator.getRecord(chunkIndex, stepPrepareTime, stepRunTime, problem.getResult()));
+                        outStatsTime.flush();
                     }
+                    problem.clearResult();
                     graphStorage.onIterationFinish();
+                    parser = null;
+                    input = null;
+                    chunk = null;
+                    memoryCleaner.freeMemory();
                 }
 
             }
         }
         graphStorage.close();
     }
+
 }

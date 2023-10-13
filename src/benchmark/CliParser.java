@@ -17,6 +17,7 @@ public class CliParser {
     public static final String GRAPH_OPT = "gp";
     public static final String WARMUP_ITERATIONS_OPT = "w";
     public static final String MEASUREMENT_ITERATIONS_OPT = "m";
+    public static final String MEMORY_USAGE = "mem";
     private final Option helpOption;
     private final Options allOptions;
 
@@ -104,6 +105,12 @@ public class CliParser {
                 .desc("Number of measurement iterations")
                 .optionalArg(false)
                 .required(true)
+                .build());
+        allOptions.addOption(Option.builder(MEMORY_USAGE)
+                .longOpt("memory_usage")
+                .hasArg(false)
+                .desc("Whether to measure memory consumption")
+                .required(false)
                 .build());
     }
 
