@@ -133,7 +133,7 @@
     <repositories>
         <repository>
             <id>usethesource</id>
-            <url>https://nexus.usethesource.io/content/repositories/public/</url>
+            <url>https://releases.usethesource.io/maven/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
