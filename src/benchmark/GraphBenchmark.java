@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.List;
 
 public class GraphBenchmark {
@@ -63,6 +64,7 @@ public class GraphBenchmark {
                 problem.toString(),
                 graphStorage.toString())
         );
+        Files.createDirectories(outFile.toPath().getParent());
         boolean fileExists = !outFile.createNewFile();
         System.out.printf("Benchmarking %s for %s graph%n", problem, datasetName);
         try (PrintWriter outStatsTime = new PrintWriter(new FileOutputStream(outFile, true), true)) {
