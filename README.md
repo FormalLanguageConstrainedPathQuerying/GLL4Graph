@@ -559,7 +559,7 @@ Here is an example which can be run right after project is downloaded and result
 To run **all pairs reachability** algorithm on **Core** graph on **G<sub>1</sub>** grammar use the following command:
 
 ```bash
-mvn exec:java -Dexec.mainClass="benchmark.GraphBenchmark" -Dexec.args="-d Core -gm test/resources/grammars/graph/g1/grammar.json -gp data/core -gs NEO4J -p REACHABILITY -S -s ALL_PAIRS -a $(( $(cat "data/core/nodes.csv" | wc -l)-1 )) -w 1 -m 10"
+mvn exec:java -Dexec.mainClass="benchmark.GraphBenchmark" -Dexec.args="-d Core -gm test/resources/grammars/graph/g1/grammar.json -gp data/core -gs IN_MEMORY -p REACHABILITY -S s=ALL_PAIRS -S a=$(( $(cat "data/core/nodes.csv" | wc -l)-1 )) -w 1 -m 10"
 ```
 
 ### Data
